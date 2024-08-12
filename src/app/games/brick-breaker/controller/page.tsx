@@ -23,7 +23,6 @@ export default function ControlPage() {
       typeof DeviceMotionEvent !== "undefined" &&
       typeof (DeviceMotionEvent as any).requestPermission === "function"
     ) {
-      // iOS 13+ requires explicit permission request
       (DeviceMotionEvent as any)
         .requestPermission()
         .then((response: string) => {
@@ -36,7 +35,6 @@ export default function ControlPage() {
         })
         .catch(console.error);
     } else {
-      // Non-iOS or older versions
       setIsStarted(true);
     }
   };
@@ -83,42 +81,90 @@ export default function ControlPage() {
   }, [isStarted, permissionGranted]);
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
       {!isStarted ? (
         <button
           onClick={handleStart}
-          style={{ fontSize: "20px", padding: "10px" }}
+          className="bg-blue-500 text-white text-lg font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
         >
           Start
         </button>
       ) : (
-        <div>
-          <h2>Device Orientation</h2>
-          <p>Alpha (Z axis): {orientationData.alpha.toFixed(2)}</p>
-          <p>Beta (X axis): {orientationData.beta.toFixed(2)}</p>
-          <p>Gamma (Y axis): {orientationData.gamma.toFixed(2)}</p>
+        <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6 space-y-4">
+          <h2 className="text-2xl font-semibold text-gray-800">
+            Device Orientation
+          </h2>
+          <div className="grid grid-cols-2 gap-4 text-gray-700">
+            <div>
+              <p className="font-medium">Alpha (Z axis):</p>
+              <p className="text-lg">{orientationData.alpha.toFixed(2)}</p>
+            </div>
+            <div>
+              <p className="font-medium">Beta (X axis):</p>
+              <p className="text-lg">{orientationData.beta.toFixed(2)}</p>
+            </div>
+            <div>
+              <p className="font-medium">Gamma (Y axis):</p>
+              <p className="text-lg">{orientationData.gamma.toFixed(2)}</p>
+            </div>
+          </div>
 
-          <h2>Device Motion</h2>
-          <p>
-            Acceleration (X): {motionData.acceleration.x.toFixed(2)} <br />
-            Acceleration (Y): {motionData.acceleration.y.toFixed(2)} <br />
-            Acceleration (Z): {motionData.acceleration.z.toFixed(2)}
+          <h2 className="text-2xl font-semibold text-gray-800">
+            Device Motion
+          </h2>
+          <div className="grid grid-cols-2 gap-4 text-gray-700">
+            <div>
+              <p className="font-medium">Acceleration (X):</p>
+              <p className="text-lg">{motionData.acceleration.x.toFixed(2)}</p>
+            </div>
+            <div>
+              <p className="font-medium">Acceleration (Y):</p>
+              <p className="text-lg">{motionData.acceleration.y.toFixed(2)}</p>
+            </div>
+            <div>
+              <p className="font-medium">Acceleration (Z):</p>
+              <p className="text-lg">{motionData.acceleration.z.toFixed(2)}</p>
+            </div>
+            <div>
+              <p className="font-medium">Acceleration with Gravity (X):</p>
+              <p className="text-lg">
+                {motionData.accelerationIncludingGravity.x.toFixed(2)}
+              </p>
+            </div>
+            <div>
+              <p className="font-medium">Acceleration with Gravity (Y):</p>
+              <p className="text-lg">
+                {motionData.accelerationIncludingGravity.y.toFixed(2)}
+              </p>
+            </div>
+            <div>
+              <p className="font-medium">Acceleration with Gravity (Z):</p>
+              <p className="text-lg">
+                {motionData.accelerationIncludingGravity.z.toFixed(2)}
+              </p>
+            </div>
+            <div>
+              <p className="font-medium">Rotation Rate Alpha:</p>
+              <p className="text-lg">
+                {motionData.rotationRate.alpha.toFixed(2)}
+              </p>
+            </div>
+            <div>
+              <p className="font-medium">Rotation Rate Beta:</p>
+              <p className="text-lg">
+                {motionData.rotationRate.beta.toFixed(2)}
+              </p>
+            </div>
+            <div>
+              <p className="font-medium">Rotation Rate Gamma:</p>
+              <p className="text-lg">
+                {motionData.rotationRate.gamma.toFixed(2)}
+              </p>
+            </div>
+          </div>
+          <p className="text-sm text-gray-500">
+            Interval: {motionData.interval.toFixed(2)} ms
           </p>
-          <p>
-            Acceleration with Gravity (X):{" "}
-            {motionData.accelerationIncludingGravity.x.toFixed(2)} <br />
-            Acceleration with Gravity (Y):{" "}
-            {motionData.accelerationIncludingGravity.y.toFixed(2)} <br />
-            Acceleration with Gravity (Z):{" "}
-            {motionData.accelerationIncludingGravity.z.toFixed(2)}
-          </p>
-          <p>
-            Rotation Rate Alpha: {motionData.rotationRate.alpha.toFixed(2)}{" "}
-            <br />
-            Rotation Rate Beta: {motionData.rotationRate.beta.toFixed(2)} <br />
-            Rotation Rate Gamma: {motionData.rotationRate.gamma.toFixed(2)}
-          </p>
-          <p>Interval: {motionData.interval.toFixed(2)} ms</p>
         </div>
       )}
     </div>
