@@ -1,130 +1,125 @@
-"use client";
-import styles from "./styles.module.css";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
-const SensorPage = () => {
-  const [orientation, setOrientation] = useState({
+export default function ControlPage() {
+  const [orientationData, setOrientationData] = useState({
     alpha: 0,
     beta: 0,
     gamma: 0,
   });
-  const [acceleration, setAcceleration] = useState({ x: 0, y: 0, z: 0 });
-  const [accelerationIncludingGravity, setAccelerationIncludingGravity] =
-    useState({ x: 0, y: 0, z: 0 });
-  const [rotationRate, setRotationRate] = useState({
-    alpha: 0,
-    beta: 0,
-    gamma: 0,
+
+  const [motionData, setMotionData] = useState({
+    acceleration: { x: 0, y: 0, z: 0 },
+    accelerationIncludingGravity: { x: 0, y: 0, z: 0 },
+    rotationRate: { alpha: 0, beta: 0, gamma: 0 },
+    interval: 0,
   });
-  const [started, setStarted] = useState(false);
 
-  const handleOrientation = (event: any) => {
-    setOrientation({
-      alpha: event.alpha,
-      beta: event.beta,
-      gamma: event.gamma,
-    });
-  };
+  const [isStarted, setIsStarted] = useState(false);
+  const [permissionGranted, setPermissionGranted] = useState(false);
 
-  const handleMotion = (event: any) => {
-    setAcceleration({
-      x: event.acceleration.x,
-      y: event.acceleration.y,
-      z: event.acceleration.z,
-    });
-    setAccelerationIncludingGravity({
-      x: event.accelerationIncludingGravity.x,
-      y: event.accelerationIncludingGravity.y,
-      z: event.accelerationIncludingGravity.z,
-    });
-    setRotationRate({
-      alpha: event.rotationRate.alpha,
-      beta: event.rotationRate.beta,
-      gamma: event.rotationRate.gamma,
-    });
-  };
-
-  const startListening = () => {
-    if (!started) {
-      window.addEventListener("deviceorientation", handleOrientation);
-      window.addEventListener("devicemotion", handleMotion);
-      setStarted(true);
-    }
-  };
-
-  const stopListening = () => {
-    if (started) {
-      window.removeEventListener("deviceorientation", handleOrientation);
-      window.removeEventListener("devicemotion", handleMotion);
-      setStarted(false);
+  const handleStart = () => {
+    if (
+      typeof DeviceMotionEvent !== "undefined" &&
+      typeof (DeviceMotionEvent as any).requestPermission === "function"
+    ) {
+      // iOS 13+ requires explicit permission request
+      (DeviceMotionEvent as any)
+        .requestPermission()
+        .then((response: string) => {
+          if (response === "granted") {
+            setPermissionGranted(true);
+            setIsStarted(true);
+          } else {
+            alert("Permission denied. Unable to access motion data.");
+          }
+        })
+        .catch(console.error);
+    } else {
+      // Non-iOS or older versions
+      setIsStarted(true);
     }
   };
 
   useEffect(() => {
-    return () => {
-      stopListening();
+    if (!isStarted || !permissionGranted) return;
+
+    const handleOrientation = (event: DeviceOrientationEvent) => {
+      setOrientationData({
+        alpha: event.alpha || 0,
+        beta: event.beta || 0,
+        gamma: event.gamma || 0,
+      });
     };
-  }, [started]);
+
+    const handleMotion = (event: DeviceMotionEvent) => {
+      setMotionData({
+        acceleration: {
+          x: event.acceleration?.x ?? 0,
+          y: event.acceleration?.y ?? 0,
+          z: event.acceleration?.z ?? 0,
+        },
+        accelerationIncludingGravity: {
+          x: event.accelerationIncludingGravity?.x ?? 0,
+          y: event.accelerationIncludingGravity?.y ?? 0,
+          z: event.accelerationIncludingGravity?.z ?? 0,
+        },
+        rotationRate: {
+          alpha: event.rotationRate?.alpha ?? 0,
+          beta: event.rotationRate?.beta ?? 0,
+          gamma: event.rotationRate?.gamma ?? 0,
+        },
+        interval: event.interval,
+      });
+    };
+
+    window.addEventListener("deviceorientation", handleOrientation);
+    window.addEventListener("devicemotion", handleMotion);
+
+    return () => {
+      window.removeEventListener("deviceorientation", handleOrientation);
+      window.removeEventListener("devicemotion", handleMotion);
+    };
+  }, [isStarted, permissionGranted]);
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.header}>Sensor Data</h1>
-      <div className={styles.buttonContainer}>
+    <div style={{ padding: "20px" }}>
+      {!isStarted ? (
         <button
-          className={styles.button}
-          onClick={startListening}
-          disabled={started}
+          onClick={handleStart}
+          style={{ fontSize: "20px", padding: "10px" }}
         >
           Start
         </button>
-        <button
-          className={styles.button}
-          onClick={stopListening}
-          disabled={!started}
-        >
-          Stop
-        </button>
-      </div>
-      <div className={styles.section}>
-        <h2>Orientation</h2>
-        <div className={styles.data}>
-          Alpha: {orientation.alpha?.toFixed(2)}
+      ) : (
+        <div>
+          <h2>Device Orientation</h2>
+          <p>Alpha (Z axis): {orientationData.alpha.toFixed(2)}</p>
+          <p>Beta (X axis): {orientationData.beta.toFixed(2)}</p>
+          <p>Gamma (Y axis): {orientationData.gamma.toFixed(2)}</p>
+
+          <h2>Device Motion</h2>
+          <p>
+            Acceleration (X): {motionData.acceleration.x.toFixed(2)} <br />
+            Acceleration (Y): {motionData.acceleration.y.toFixed(2)} <br />
+            Acceleration (Z): {motionData.acceleration.z.toFixed(2)}
+          </p>
+          <p>
+            Acceleration with Gravity (X):{" "}
+            {motionData.accelerationIncludingGravity.x.toFixed(2)} <br />
+            Acceleration with Gravity (Y):{" "}
+            {motionData.accelerationIncludingGravity.y.toFixed(2)} <br />
+            Acceleration with Gravity (Z):{" "}
+            {motionData.accelerationIncludingGravity.z.toFixed(2)}
+          </p>
+          <p>
+            Rotation Rate Alpha: {motionData.rotationRate.alpha.toFixed(2)}{" "}
+            <br />
+            Rotation Rate Beta: {motionData.rotationRate.beta.toFixed(2)} <br />
+            Rotation Rate Gamma: {motionData.rotationRate.gamma.toFixed(2)}
+          </p>
+          <p>Interval: {motionData.interval.toFixed(2)} ms</p>
         </div>
-        <div className={styles.data}>Beta: {orientation.beta?.toFixed(2)}</div>
-        <div className={styles.data}>
-          Gamma: {orientation.gamma?.toFixed(2)}
-        </div>
-      </div>
-      <div className={styles.section}>
-        <h2>Acceleration</h2>
-        <div className={styles.data}>X: {acceleration.x?.toFixed(2)}</div>
-        <div className={styles.data}>Y: {acceleration.y?.toFixed(2)}</div>
-        <div className={styles.data}>Z: {acceleration.z?.toFixed(2)}</div>
-      </div>
-      <div className={styles.section}>
-        <h2>Acceleration Including Gravity</h2>
-        <div className={styles.data}>
-          X: {accelerationIncludingGravity.x?.toFixed(2)}
-        </div>
-        <div className={styles.data}>
-          Y: {accelerationIncludingGravity.y?.toFixed(2)}
-        </div>
-        <div className={styles.data}>
-          Z: {accelerationIncludingGravity.z?.toFixed(2)}
-        </div>
-      </div>
-      <div className={styles.section}>
-        <h2>Rotation Rate</h2>
-        <div className={styles.data}>
-          Alpha: {rotationRate.alpha?.toFixed(2)}
-        </div>
-        <div className={styles.data}>Beta: {rotationRate.beta?.toFixed(2)}</div>
-        <div className={styles.data}>
-          Gamma: {rotationRate.gamma?.toFixed(2)}
-        </div>
-      </div>
+      )}
     </div>
   );
-};
-
-export default SensorPage;
+}
