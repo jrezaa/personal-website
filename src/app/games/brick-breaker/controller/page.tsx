@@ -53,7 +53,7 @@ export default function ControlPage() {
   useEffect(() => {
     const interval = setInterval(() => {
       sendMessage(orientation - calibratedOrientation, direction);
-    }, 1); // Adjust the interval if needed
+    }, 100); // Adjust the interval if needed
 
     return () => {
       clearInterval(interval);
