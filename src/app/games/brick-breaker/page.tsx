@@ -49,6 +49,8 @@ export default function Breaker() {
                 setPlayerObj={setPlayerObj1}
                 setGameOver={setGameOver1}
                 start={start1}
+                acceleration={receivedAcceleration}
+                orientation={receivedOrientation}
               />
             ) : (
               <button
@@ -69,6 +71,8 @@ export default function Breaker() {
                 setPlayerObj={setPlayerObj2}
                 setGameOver={setGameOver2}
                 start={start2}
+                acceleration={receivedAcceleration}
+                orientation={receivedOrientation}
               />
             ) : (
               <button

@@ -7,6 +7,7 @@ export default function ControlPage() {
     "https://jeeflikebeef.duckdns.org/api/websocket/controller?isController=1"
   );
   const [orientation, setOrientation] = useState<number>(0);
+  const [calibrateOrientation, setCalibrateOrientation] = useState<number>(0);
   const [acceleration, setAcceleration] = useState<number>(0);
 
   const [isStarted, setIsStarted] = useState(false);
@@ -57,7 +58,7 @@ export default function ControlPage() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      sendMessage(orientation, acceleration);
+      sendMessage(orientation - calibrateOrientation, acceleration);
     }, 1);
 
     return () => {
@@ -94,6 +95,14 @@ export default function ControlPage() {
               <p className="text-lg">{acceleration.toFixed(2)}</p>
             </div>
           </div>
+          <button
+            onClick={() => {
+              setCalibrateOrientation(orientation);
+            }}
+            className="bg-blue-500 text-white text-lg font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+          >
+            Calibrate
+          </button>
         </div>
       )}
     </div>

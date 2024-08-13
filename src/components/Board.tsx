@@ -18,12 +18,16 @@ export default function Board({
   setPlayerObj,
   setGameOver,
   start,
+  acceleration,
+  orientation,
 }: {
   playerNumber: number;
   playerObj: PlayerType;
   setPlayerObj: Dispatch<SetStateAction<PlayerType>>;
   setGameOver: Dispatch<SetStateAction<boolean>>;
   start: boolean;
+  acceleration: number;
+  orientation: number;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [bricks, setBricks] = useState<SingleBrick[]>([]);
@@ -140,31 +144,32 @@ export default function Board({
       keysPressedRef.current[event.key] = false;
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
+    // window.addEventListener("keydown", handleKeyDown);
+    // window.addEventListener("keyup", handleKeyUp);
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
+      // window.removeEventListener("keydown", handleKeyDown);
+      // window.removeEventListener("keyup", handleKeyUp);
     };
   }, [player, start]);
 
   const handlePaddleMovement = () => {
-    if (playerNumber === 1) {
-      if (keysPressedRef.current["ArrowLeft"]) {
-        setPaddle((prev) => ({ ...prev, x: prev.x - paddle.speed }));
-      }
-      if (keysPressedRef.current["ArrowRight"]) {
-        setPaddle((prev) => ({ ...prev, x: prev.x + paddle.speed }));
-      }
-    } else if (playerNumber === 2) {
-      if (keysPressedRef.current["a"]) {
-        setPaddle((prev) => ({ ...prev, x: prev.x - paddle.speed }));
-      }
-      if (keysPressedRef.current["d"]) {
-        setPaddle((prev) => ({ ...prev, x: prev.x + paddle.speed }));
-      }
+    if (playerNumber === 1 || playerNumber === 2) {
+      // if (keysPressedRef.current["ArrowLeft"]) {
+      setPaddle((prev) => ({ ...prev, x: prev.x }));
+      // }
+      // if (keysPressedRef.current["ArrowRight"]) {
+      //   setPaddle((prev) => ({ ...prev, x: prev.x + paddle.speed }));
+      // }
     }
+    // else if (playerNumber === 2) {
+    //   if (keysPressedRef.current["a"]) {
+    //     setPaddle((prev) => ({ ...prev, x: prev.x - paddle.speed }));
+    //   }
+    //   if (keysPressedRef.current["d"]) {
+    //     setPaddle((prev) => ({ ...prev, x: prev.x + paddle.speed }));
+    //   }
+    // }
   };
 
   return (
