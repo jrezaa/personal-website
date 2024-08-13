@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+// import { useSearchParams } from "next/navigation";
 import LeetcodeTypePage from "../../../components/LeetcodeTypePage";
 import { Suspense } from "react";
 
@@ -108,25 +108,24 @@ const problemsData = {
 };
 
 export default function QuestionTypePage() {
-  const searchParams = useSearchParams();
-  const type = searchParams.get("type");
+  // const searchParams = useSearchParams();
+  // const type = searchParams.get("type");
 
-  const pageData = problemsData[type as keyof typeof problemsData];
+  // const pageData = problemsData[type as keyof typeof problemsData];
 
-  if (!pageData) {
-    return <div>Type not found</div>;
-  }
+  // if (!pageData) {
+  //   return <div>Type not found</div>;
+  // }
 
   return (
-    <Suspense fallback={<div>LOADING...</div>}>
-      <LeetcodeTypePage
-        title={pageData.title}
-        introduction={pageData.introduction}
-        problems={pageData.problems}
-        additionalSections={
-          <div>Additional content can be added here if needed</div>
-        }
-      />
-    </Suspense>
+    <h1>Arrays</h1>
+    // <LeetcodeTypePage
+    //   title={pageData.title}
+    //   introduction={pageData.introduction}
+    //   problems={pageData.problems}
+    //   additionalSections={
+    //     <div>Additional content can be added here if needed</div>
+    //   }
+    // />
   );
 }
