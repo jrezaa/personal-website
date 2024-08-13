@@ -23,6 +23,7 @@ export default function ControlPage() {
         .requestPermission()
         .then((response: string) => {
           if (response === "granted") {
+            console.log("Permission granted");
             setPermissionGranted(true);
             setIsStarted(true);
           } else {
@@ -31,7 +32,9 @@ export default function ControlPage() {
         })
         .catch(console.error);
     } else {
+      console.log("Permission not required or not supported");
       setIsStarted(true);
+      setPermissionGranted(true);
     }
   };
 
@@ -52,6 +55,11 @@ export default function ControlPage() {
 
   useEffect(() => {
     const interval = setInterval(() => {
+      console.log(
+        "Sending message: ",
+        orientation - calibratedOrientation,
+        direction
+      );
       sendMessage(orientation - calibratedOrientation, direction);
     }, 100); // Adjust the interval if needed
 
