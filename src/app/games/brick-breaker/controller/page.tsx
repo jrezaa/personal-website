@@ -104,13 +104,13 @@ export default function ControlPage() {
                 <h2 className="text-2xl font-semibold text-gray-800">
                   Device Orientation
                 </h2>
-                <p className="text-lg">
+                <p className="text-lg text-gray-800">
                   {(orientation - calibratedOrientation).toFixed(2)}°
                 </p>
                 <h2 className="text-2xl font-semibold text-gray-800">
                   Direction
                 </h2>
-                <p className="text-lg">
+                <p className="text-lg  text-gray-800">
                   {direction === Direction.Left
                     ? "Left"
                     : direction === Direction.Right
