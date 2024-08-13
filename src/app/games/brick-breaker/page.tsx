@@ -4,6 +4,7 @@ import Board from "@/components/Board";
 import data from "./data";
 import { useEffect, useState } from "react";
 import useWebSocket from "@/app/hooks/useWebSocket";
+import { Direction } from "@/app/utils/util-classes";
 
 export default function Breaker() {
   const { player } = data;
@@ -34,8 +35,17 @@ export default function Breaker() {
       <h1>Brick breaker!</h1>
       <div>
         <h1>Listener</h1>
-        <p>Orientation (Z-axis): {receivedOrientation}°</p>
-        <p>Acceleration (Y-axis): {receivedDirection} m/s²</p>
+        <p>
+          Orientation (Z-axis): {receivedOrientation}° {receivedDirection}
+        </p>
+        <p>
+          Direction:{" "}
+          {receivedDirection === Direction.None
+            ? "NOT MOVING"
+            : receivedDirection === Direction.Left
+            ? "LEFT"
+            : "RIGHT"}
+        </p>
       </div>
       {!gameOver1 || !gameOver2 ? (
         <div className="flex justify-center gap-20">

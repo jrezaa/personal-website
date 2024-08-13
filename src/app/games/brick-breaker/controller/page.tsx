@@ -53,16 +53,19 @@ export default function ControlPage() {
   useEffect(() => {
     const interval = setInterval(() => {
       sendMessage(orientation - calibratedOrientation, direction);
-    }, 1);
+    }, 100); // Adjust the interval if needed
 
     return () => {
       clearInterval(interval);
     };
   }, [orientation, direction, sendMessage]);
 
-  const handleTouchStart = (side: "left" | "right") => {
-    if (side === "left") setDirection(Direction.Left);
-    else if (side === "right") setDirection(Direction.Right);
+  const handleTouchStartLeft = () => {
+    setDirection(Direction.Left);
+  };
+
+  const handleTouchStartRight = () => {
+    setDirection(Direction.Right);
   };
 
   const handleTouchEnd = () => {
@@ -80,12 +83,12 @@ export default function ControlPage() {
         </button>
       ) : (
         <div className="flex flex-col items-center w-full h-full">
-          <div
-            className="flex-1 w-full flex"
-            onTouchStart={() => handleTouchStart("left")}
-            onTouchEnd={handleTouchEnd}
-          >
-            <div className="flex-1 bg-blue-500 flex items-center justify-center">
+          <div className="flex-1 w-full flex">
+            <div
+              className="flex-1 bg-blue-500 flex items-center justify-center"
+              onTouchStart={handleTouchStartLeft}
+              onTouchEnd={handleTouchEnd}
+            >
               <p className="text-white text-2xl">Left</p>
             </div>
             <div className="flex-1 bg-gray-100 flex items-center justify-center">
@@ -118,7 +121,7 @@ export default function ControlPage() {
             </div>
             <div
               className="flex-1 bg-red-500 flex items-center justify-center"
-              onTouchStart={() => handleTouchStart("right")}
+              onTouchStart={handleTouchStartRight}
               onTouchEnd={handleTouchEnd}
             >
               <p className="text-white text-2xl">Right</p>
