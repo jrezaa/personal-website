@@ -2,6 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import LeetcodeTypePage from "../../../components/LeetcodeTypePage";
+import { Suspense } from "react";
 
 const problemsData = {
   arrays: {
@@ -117,13 +118,15 @@ export default function QuestionTypePage() {
   }
 
   return (
-    <LeetcodeTypePage
-      title={pageData.title}
-      introduction={pageData.introduction}
-      problems={pageData.problems}
-      additionalSections={
-        <div>Additional content can be added here if needed</div>
-      }
-    />
+    <Suspense fallback={<div>LOADING...</div>}>
+      <LeetcodeTypePage
+        title={pageData.title}
+        introduction={pageData.introduction}
+        problems={pageData.problems}
+        additionalSections={
+          <div>Additional content can be added here if needed</div>
+        }
+      />
+    </Suspense>
   );
 }
