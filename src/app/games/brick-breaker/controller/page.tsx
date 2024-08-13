@@ -1,19 +1,13 @@
 "use client";
+import useWebSocket from "@/app/hooks/useWebSocket";
 import { useEffect, useState } from "react";
 
 export default function ControlPage() {
-  const [orientationData, setOrientationData] = useState({
-    alpha: 0,
-    beta: 0,
-    gamma: 0,
-  });
-
-  const [motionData, setMotionData] = useState({
-    acceleration: { x: 0, y: 0, z: 0 },
-    accelerationIncludingGravity: { x: 0, y: 0, z: 0 },
-    rotationRate: { alpha: 0, beta: 0, gamma: 0 },
-    interval: 0,
-  });
+  const { sendMessage } = useWebSocket(
+    "https://jeeflikebeef.duckdns.org/api/websocket/controller?isController=1"
+  );
+  const [orientation, setOrientation] = useState<number>(0);
+  const [acceleration, setAcceleration] = useState<number>(0);
 
   const [isStarted, setIsStarted] = useState(false);
   const [permissionGranted, setPermissionGranted] = useState(false);
@@ -43,32 +37,13 @@ export default function ControlPage() {
     if (!isStarted || !permissionGranted) return;
 
     const handleOrientation = (event: DeviceOrientationEvent) => {
-      setOrientationData({
-        alpha: event.alpha || 0,
-        beta: event.beta || 0,
-        gamma: event.gamma || 0,
-      });
+      const zOrientation = event.alpha || 0;
+      setOrientation(zOrientation);
     };
 
     const handleMotion = (event: DeviceMotionEvent) => {
-      setMotionData({
-        acceleration: {
-          x: event.acceleration?.x ?? 0,
-          y: event.acceleration?.y ?? 0,
-          z: event.acceleration?.z ?? 0,
-        },
-        accelerationIncludingGravity: {
-          x: event.accelerationIncludingGravity?.x ?? 0,
-          y: event.accelerationIncludingGravity?.y ?? 0,
-          z: event.accelerationIncludingGravity?.z ?? 0,
-        },
-        rotationRate: {
-          alpha: event.rotationRate?.alpha ?? 0,
-          beta: event.rotationRate?.beta ?? 0,
-          gamma: event.rotationRate?.gamma ?? 0,
-        },
-        interval: event.interval,
-      });
+      const yAcceleration = event.acceleration?.y ?? 0;
+      setAcceleration(yAcceleration);
     };
 
     window.addEventListener("deviceorientation", handleOrientation);
@@ -80,6 +55,15 @@ export default function ControlPage() {
     };
   }, [isStarted, permissionGranted]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      sendMessage(orientation, acceleration);
+    }, 1);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [orientation, acceleration, sendMessage]);
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
       {!isStarted ? (
@@ -97,15 +81,7 @@ export default function ControlPage() {
           <div className="grid grid-cols-2 gap-4 text-gray-700">
             <div>
               <p className="font-medium">Alpha (Z axis):</p>
-              <p className="text-lg">{orientationData.alpha.toFixed(2)}</p>
-            </div>
-            <div>
-              <p className="font-medium">Beta (X axis):</p>
-              <p className="text-lg">{orientationData.beta.toFixed(2)}</p>
-            </div>
-            <div>
-              <p className="font-medium">Gamma (Y axis):</p>
-              <p className="text-lg">{orientationData.gamma.toFixed(2)}</p>
+              <p className="text-lg">{orientation.toFixed(2)}</p>
             </div>
           </div>
 
@@ -115,56 +91,9 @@ export default function ControlPage() {
           <div className="grid grid-cols-2 gap-4 text-gray-700">
             <div>
               <p className="font-medium">Acceleration (X):</p>
-              <p className="text-lg">{motionData.acceleration.x.toFixed(2)}</p>
-            </div>
-            <div>
-              <p className="font-medium">Acceleration (Y):</p>
-              <p className="text-lg">{motionData.acceleration.y.toFixed(2)}</p>
-            </div>
-            <div>
-              <p className="font-medium">Acceleration (Z):</p>
-              <p className="text-lg">{motionData.acceleration.z.toFixed(2)}</p>
-            </div>
-            <div>
-              <p className="font-medium">Acceleration with Gravity (X):</p>
-              <p className="text-lg">
-                {motionData.accelerationIncludingGravity.x.toFixed(2)}
-              </p>
-            </div>
-            <div>
-              <p className="font-medium">Acceleration with Gravity (Y):</p>
-              <p className="text-lg">
-                {motionData.accelerationIncludingGravity.y.toFixed(2)}
-              </p>
-            </div>
-            <div>
-              <p className="font-medium">Acceleration with Gravity (Z):</p>
-              <p className="text-lg">
-                {motionData.accelerationIncludingGravity.z.toFixed(2)}
-              </p>
-            </div>
-            <div>
-              <p className="font-medium">Rotation Rate Alpha:</p>
-              <p className="text-lg">
-                {motionData.rotationRate.alpha.toFixed(2)}
-              </p>
-            </div>
-            <div>
-              <p className="font-medium">Rotation Rate Beta:</p>
-              <p className="text-lg">
-                {motionData.rotationRate.beta.toFixed(2)}
-              </p>
-            </div>
-            <div>
-              <p className="font-medium">Rotation Rate Gamma:</p>
-              <p className="text-lg">
-                {motionData.rotationRate.gamma.toFixed(2)}
-              </p>
+              <p className="text-lg">{acceleration.toFixed(2)}</p>
             </div>
           </div>
-          <p className="text-sm text-gray-500">
-            Interval: {motionData.interval.toFixed(2)} ms
-          </p>
         </div>
       )}
     </div>

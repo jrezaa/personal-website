@@ -3,6 +3,7 @@
 import Board from "@/components/Board";
 import data from "./data";
 import { useEffect, useState } from "react";
+import useWebSocket from "@/app/hooks/useWebSocket";
 
 export default function Breaker() {
   const { player } = data;
@@ -12,6 +13,9 @@ export default function Breaker() {
   const [playerObj2, setPlayerObj2] = useState(player);
   const [start1, setStart1] = useState(false);
   const [start2, setStart2] = useState(false);
+  const { receivedAcceleration, receivedOrientation } = useWebSocket(
+    "https://jeeflikebeef.duckdns.org/api/websocket/controller"
+  );
 
   useEffect(() => {
     if (!gameOver1 || !gameOver2) return;
@@ -24,9 +28,17 @@ export default function Breaker() {
     }
   }, [gameOver1, gameOver2]);
 
+  useEffect(() => {
+    console.log(receivedAcceleration, receivedOrientation);
+  }, [receivedAcceleration, receivedOrientation]);
   return (
     <>
       <h1>Brick breaker!</h1>
+      <div>
+        <h1>Listener</h1>
+        <p>Orientation (Z-axis): {receivedOrientation}°</p>
+        <p>Acceleration (Y-axis): {receivedAcceleration} m/s²</p>
+      </div>
       {!gameOver1 || !gameOver2 ? (
         <div className="flex justify-center gap-20">
           {!gameOver1 ? (
