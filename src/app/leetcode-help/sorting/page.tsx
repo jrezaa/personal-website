@@ -34,5 +34,3 @@ function selectionSort(arr: number[]): number[] {
   }
   return arr;
 }
-
-function insertionSort(arr: number[]): number[] {}

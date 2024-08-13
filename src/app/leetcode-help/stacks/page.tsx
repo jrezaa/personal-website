@@ -1,4 +1,4 @@
-import { NNode } from "../linked-lists/page";
+import { NNode } from "@/app/utils/util-classes";
 
 export default function QuestionTypePage() {
   const stack = new StackNode();
