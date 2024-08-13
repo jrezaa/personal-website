@@ -1,5 +1,6 @@
 "use client";
 import useWebSocket from "@/app/hooks/useWebSocket";
+import { Direction } from "@/app/utils/util-classes";
 import { useEffect, useState } from "react";
 
 export default function ControlPage() {
@@ -7,8 +8,8 @@ export default function ControlPage() {
     "https://jeeflikebeef.duckdns.org/api/websocket/controller?isController=1"
   );
   const [orientation, setOrientation] = useState<number>(0);
-  const [calibrateOrientation, setCalibrateOrientation] = useState<number>(0);
-  const [acceleration, setAcceleration] = useState<number>(0);
+  const [calibratedOrientation, setCalibratedOrientation] = useState<number>(0);
+  const [direction, setDirection] = useState<Direction>(Direction.None);
 
   const [isStarted, setIsStarted] = useState(false);
   const [permissionGranted, setPermissionGranted] = useState(false);
@@ -42,29 +43,32 @@ export default function ControlPage() {
       setOrientation(zOrientation);
     };
 
-    const handleMotion = (event: DeviceMotionEvent) => {
-      const yAcceleration = event.acceleration?.y ?? 0;
-      setAcceleration(yAcceleration);
-    };
-
     window.addEventListener("deviceorientation", handleOrientation);
-    window.addEventListener("devicemotion", handleMotion);
 
     return () => {
       window.removeEventListener("deviceorientation", handleOrientation);
-      window.removeEventListener("devicemotion", handleMotion);
     };
   }, [isStarted, permissionGranted]);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      sendMessage(orientation - calibrateOrientation, acceleration);
+      sendMessage(orientation - calibratedOrientation, direction);
     }, 1);
 
     return () => {
       clearInterval(interval);
     };
-  }, [orientation, acceleration, sendMessage]);
+  }, [orientation, direction, sendMessage]);
+
+  const handleTouchStart = (side: "left" | "right") => {
+    if (side === "left") setDirection(Direction.Left);
+    else if (side === "right") setDirection(Direction.Right);
+  };
+
+  const handleTouchEnd = () => {
+    setDirection(Direction.None);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
       {!isStarted ? (
@@ -75,34 +79,51 @@ export default function ControlPage() {
           Start
         </button>
       ) : (
-        <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6 space-y-4">
-          <h2 className="text-2xl font-semibold text-gray-800">
-            Device Orientation
-          </h2>
-          <div className="grid grid-cols-2 gap-4 text-gray-700">
-            <div>
-              <p className="font-medium">Alpha (Z axis):</p>
-              <p className="text-lg">{orientation.toFixed(2)}</p>
-            </div>
-          </div>
-
-          <h2 className="text-2xl font-semibold text-gray-800">
-            Device Motion
-          </h2>
-          <div className="grid grid-cols-2 gap-4 text-gray-700">
-            <div>
-              <p className="font-medium">Acceleration (X):</p>
-              <p className="text-lg">{acceleration.toFixed(2)}</p>
-            </div>
-          </div>
-          <button
-            onClick={() => {
-              setCalibrateOrientation(orientation);
-            }}
-            className="bg-blue-500 text-white text-lg font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+        <div className="flex flex-col items-center w-full h-full">
+          <div
+            className="flex-1 w-full flex"
+            onTouchStart={() => handleTouchStart("left")}
+            onTouchEnd={handleTouchEnd}
           >
-            Calibrate
-          </button>
+            <div className="flex-1 bg-blue-500 flex items-center justify-center">
+              <p className="text-white text-2xl">Left</p>
+            </div>
+            <div className="flex-1 bg-gray-100 flex items-center justify-center">
+              <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6 space-y-4 text-center">
+                <h2 className="text-2xl font-semibold text-gray-800">
+                  Device Orientation
+                </h2>
+                <p className="text-lg">
+                  {(orientation - calibratedOrientation).toFixed(2)}°
+                </p>
+                <h2 className="text-2xl font-semibold text-gray-800">
+                  Direction
+                </h2>
+                <p className="text-lg">
+                  {direction === Direction.Left
+                    ? "Left"
+                    : direction === Direction.Right
+                    ? "Right"
+                    : "None"}
+                </p>
+                <button
+                  onClick={() => {
+                    setCalibratedOrientation(orientation);
+                  }}
+                  className="bg-blue-500 text-white text-lg font-semibold px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75"
+                >
+                  Calibrate
+                </button>
+              </div>
+            </div>
+            <div
+              className="flex-1 bg-red-500 flex items-center justify-center"
+              onTouchStart={() => handleTouchStart("right")}
+              onTouchEnd={handleTouchEnd}
+            >
+              <p className="text-white text-2xl">Right</p>
+            </div>
+          </div>
         </div>
       )}
     </div>
