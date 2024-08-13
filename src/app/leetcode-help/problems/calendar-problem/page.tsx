@@ -135,10 +135,10 @@ export default function QuestionTypePage() {
       <h1>Calendar Problem</h1>
       <br />
       <span>
-        Stan is looking to provide access to creators' calendars and enable fans
-        to book meetings with them. Your assignment is to create an algorythm
-        that will assess creator's calendar and return available slots for fans
-        to book.
+        Stan is looking to provide access to creators&apos; calendars and enable
+        fans to book meetings with them. Your assignment is to create an
+        algorythm that will assess creator&apos;s calendar and return available
+        slots for fans to book.
       </span>
       <br />
       <br />
