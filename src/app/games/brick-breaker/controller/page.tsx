@@ -94,9 +94,7 @@ export default function ControlPage() {
               className="flex-1 bg-blue-500 flex items-center justify-center"
               onTouchStart={handleTouchStartLeft}
               onTouchEnd={handleTouchEnd}
-            >
-              <p className="text-white text-2xl">Left</p>
-            </div>
+            ></div>
             <div className="flex-1 bg-gray-100 flex items-center justify-center">
               <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6 space-y-4 text-center">
                 <h2 className="text-2xl font-semibold text-gray-800">
@@ -129,9 +127,7 @@ export default function ControlPage() {
               className="flex-1 bg-red-500 flex items-center justify-center"
               onTouchStart={handleTouchStartRight}
               onTouchEnd={handleTouchEnd}
-            >
-              <p className="text-white text-2xl">Right</p>
-            </div>
+            ></div>
           </div>
         </div>
       )}
