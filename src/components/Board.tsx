@@ -176,8 +176,8 @@ export default function Board({
           (directionRef.current === Direction.None
             ? 0
             : directionRef.current === Direction.Left
-            ? 1
-            : -1),
+            ? -paddleProps.speed
+            : paddleProps.speed),
         orientation: orientationRef.current,
       }));
       // }
