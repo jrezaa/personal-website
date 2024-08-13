@@ -38,7 +38,7 @@ export default function ControlPage() {
     if (!isStarted || !permissionGranted) return;
 
     const handleOrientation = (event: DeviceOrientationEvent) => {
-      const zOrientation = event.alpha || 0;
+      const zOrientation = event.beta || 0;
       setOrientation(zOrientation);
     };
 

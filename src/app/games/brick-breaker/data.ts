@@ -27,6 +27,7 @@ export default {
     width: 100,
     x: 100,
     y: 10,
+    orientation: 0,
     dx: 5,
     speed: 2,
     color: "orange",
@@ -63,6 +64,7 @@ export type PaddleType = {
   width: number;
   x: number;
   y: number;
+  orientation: number;
   color: string;
   dx: number;
   speed: number;

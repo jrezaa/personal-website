@@ -17,21 +17,32 @@ export class Paddle {
   constructor(
     public x: number,
     public y: number,
+    public angle: number,
     public height: number,
     public width: number
   ) {}
 
   move(ctx: CanvasRenderingContext2D) {
+    ctx.save(); // Save the current canvas state
+
+    // Translate to the paddle's center
+    ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+
+    // Convert the angle to radians and rotate the canvas
+    ctx.rotate((this.angle * Math.PI) / 180);
+
+    // Draw the paddle centered at (0, 0) due to the translation
     ctx.beginPath();
-    ctx.rect(this.x, this.y, this.width, this.height);
+    ctx.rect(-this.width / 2, -this.height / 2, this.width, this.height);
     ctx.fillStyle = this.broke ? "white" : this.colors[1];
     ctx.strokeStyle = this.broke ? "white" : "red";
     ctx.lineWidth = 1;
-    ctx.fillStyle = this.broke ? "white" : this.colors[1];
     ctx.shadowBlur = 0;
     ctx.shadowColor = "blue";
-    ctx.strokeRect(this.x, this.y, this.width, this.height);
+    ctx.strokeRect(-this.width / 2, -this.height / 2, this.width, this.height);
     ctx.fill();
+
+    ctx.restore(); // Restore the canvas state
   }
 }
 
@@ -290,4 +301,10 @@ class DoublyLinkedList {
       counter++;
     }
   }
+}
+
+export enum Direction {
+  None = 0,
+  Left = 1,
+  Right = 2,
 }

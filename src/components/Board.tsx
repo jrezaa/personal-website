@@ -10,7 +10,7 @@ import {
 } from "@/app/utils/util-functions";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import data, { BrickType, PlayerType } from "../app/games/brick-breaker/data";
-import { SingleBrick } from "@/app/utils/util-classes";
+import { Direction, SingleBrick } from "@/app/utils/util-classes";
 
 export default function Board({
   playerNumber,
@@ -18,7 +18,7 @@ export default function Board({
   setPlayerObj,
   setGameOver,
   start,
-  acceleration,
+  direction,
   orientation,
 }: {
   playerNumber: number;
@@ -26,7 +26,7 @@ export default function Board({
   setPlayerObj: Dispatch<SetStateAction<PlayerType>>;
   setGameOver: Dispatch<SetStateAction<boolean>>;
   start: boolean;
-  acceleration: number;
+  direction: Direction;
   orientation: number;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -35,6 +35,7 @@ export default function Board({
   const [ball, setBall] = useState(ballObj);
   const [brickSet, setBrickSet] = useState(false);
   const [paddle, setPaddle] = useState(paddleProps);
+  const [velocity, setVelocity] = useState(0);
   const [brickPlacement, setBrickPlacement] = useState<BrickType>(brickObj);
   const ballRef = useRef(ball);
   const playerRef = useRef(playerObj);
@@ -44,12 +45,25 @@ export default function Board({
   const levelUpRef = useRef(false);
   const brickPlacementRef = useRef(brickPlacement);
   const keysPressedRef = useRef<{ [key: string]: boolean }>({});
-
+  const orientationRef = useRef<number>(0);
+  const directionRef = useRef<Direction>(Direction.None);
+  const velRef = useRef<number>(0);
   // Sync refs with state
+  useEffect(() => {
+    orientationRef.current = orientation;
+  }, [orientation]);
+
+  useEffect(() => {
+    directionRef.current = direction;
+  }, [direction]);
+
+  useEffect(() => {
+    velRef.current = velocity;
+  }, [velocity]);
+
   useEffect(() => {
     ballRef.current = ball;
   }, [ball]);
-
   useEffect(() => {
     bricksRef.current = bricks;
   }, [bricks]);
@@ -155,8 +169,17 @@ export default function Board({
 
   const handlePaddleMovement = () => {
     if (playerNumber === 1 || playerNumber === 2) {
-      // if (keysPressedRef.current["ArrowLeft"]) {
-      setPaddle((prev) => ({ ...prev, x: prev.x }));
+      setPaddle((prev) => ({
+        ...prev,
+        x:
+          prev.x +
+          (directionRef.current === Direction.None
+            ? 0
+            : directionRef.current === Direction.Left
+            ? 1
+            : -1),
+        orientation: orientationRef.current,
+      }));
       // }
       // if (keysPressedRef.current["ArrowRight"]) {
       //   setPaddle((prev) => ({ ...prev, x: prev.x + paddle.speed }));

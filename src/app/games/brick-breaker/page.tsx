@@ -13,7 +13,7 @@ export default function Breaker() {
   const [playerObj2, setPlayerObj2] = useState(player);
   const [start1, setStart1] = useState(false);
   const [start2, setStart2] = useState(false);
-  const { receivedAcceleration, receivedOrientation } = useWebSocket(
+  const { receivedDirection, receivedOrientation } = useWebSocket(
     "https://jeeflikebeef.duckdns.org/api/websocket/controller"
   );
 
@@ -28,16 +28,14 @@ export default function Breaker() {
     }
   }, [gameOver1, gameOver2]);
 
-  useEffect(() => {
-    console.log(receivedAcceleration, receivedOrientation);
-  }, [receivedAcceleration, receivedOrientation]);
+  useEffect(() => {}, [receivedDirection, receivedOrientation]);
   return (
     <>
       <h1>Brick breaker!</h1>
       <div>
         <h1>Listener</h1>
         <p>Orientation (Z-axis): {receivedOrientation}°</p>
-        <p>Acceleration (Y-axis): {receivedAcceleration} m/s²</p>
+        <p>Acceleration (Y-axis): {receivedDirection} m/s²</p>
       </div>
       {!gameOver1 || !gameOver2 ? (
         <div className="flex justify-center gap-20">
@@ -49,7 +47,7 @@ export default function Breaker() {
                 setPlayerObj={setPlayerObj1}
                 setGameOver={setGameOver1}
                 start={start1}
-                acceleration={receivedAcceleration}
+                direction={receivedDirection}
                 orientation={receivedOrientation}
               />
             ) : (
@@ -71,7 +69,7 @@ export default function Breaker() {
                 setPlayerObj={setPlayerObj2}
                 setGameOver={setGameOver2}
                 start={start2}
-                acceleration={receivedAcceleration}
+                direction={receivedDirection}
                 orientation={receivedOrientation}
               />
             ) : (

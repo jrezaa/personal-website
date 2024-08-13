@@ -77,6 +77,7 @@ export function MovePaddle(
   let paddle = new Paddle(
     paddleProps.x,
     canvas.height - 30,
+    paddleProps.orientation,
     paddleProps.height,
     paddleProps.width
   );
@@ -172,13 +173,17 @@ export function PaddleHit(
     // NORMALIZE THE VALUES
     collidePoint = collidePoint / (paddleProps.width / 2);
 
-    // CALCULATE THE ANGLE OF THE ballObj
-    let angle = (collidePoint * Math.PI) / 3;
+    // CALCULATE THE BASE ANGLE OF THE ballObj WITHOUT PADDLE ORIENTATION
+    let baseAngle = (collidePoint * Math.PI) / 3; // Angle in radians
+
+    // ADJUST THE ANGLE BASED ON THE PADDLE ORIENTATION
+    const paddleAngleInRadians = (paddleProps.orientation * Math.PI) / 180;
+    let finalAngle = baseAngle + paddleAngleInRadians;
 
     setBall((prev) => ({
       ...prev,
-      dx: ballObj.speed * Math.sin(angle),
-      dy: -ballObj.speed * Math.cos(angle),
+      dx: ballObj.speed * Math.sin(finalAngle),
+      dy: -ballObj.speed * Math.cos(finalAngle),
     }));
   }
 }

@@ -1,39 +1,40 @@
 import { useState, useRef, useEffect } from "react";
+import { Direction } from "../utils/util-classes";
 
 // Constants for encoding
 const ORIENTATION_BITS = 10;
-const ACCELERATION_BITS = 8;
+const DIRECTION_BITS = 2; // 2 bits to represent 3 directions (left, right, none)
 const MAX_ORIENTATION = 360;
-const MAX_ACCELERATION = 10.0;
 
-// Function to encode orientation and acceleration into a single binary number
-function encodePose(orientation: number, acceleration: number): number {
+// Enum for direction
+
+// Function to encode orientation and direction into a single binary number
+function encodePose(orientation: number, direction: Direction): number {
   const normalizedOrientation = Math.round(orientation + MAX_ORIENTATION); // Normalize to 0-720
-  const normalizedAcceleration = Math.round(
-    (acceleration + MAX_ACCELERATION) * 10
-  ); // Normalize to 0-200
 
   // Combine them into a single number
-  return (normalizedOrientation << ACCELERATION_BITS) | normalizedAcceleration;
+  return (normalizedOrientation << DIRECTION_BITS) | direction;
 }
 
-// Function to decode the binary number back into orientation and acceleration
+// Function to decode the binary number back into orientation and direction
 function decodePose(encodedPose: number): {
   orientation: number;
-  acceleration: number;
+  direction: Direction;
 } {
-  const acceleration = (encodedPose & 0b11111111) / 10 - MAX_ACCELERATION; // Extract last 8 bits for acceleration
-  const orientation = (encodedPose >> ACCELERATION_BITS) - MAX_ORIENTATION; // Extract remaining bits for orientation
-  return { orientation, acceleration };
+  const direction = encodedPose & 0b11; // Extract last 2 bits for direction
+  const orientation = (encodedPose >> DIRECTION_BITS) - MAX_ORIENTATION; // Extract remaining bits for orientation
+  return { orientation, direction: direction as Direction };
 }
 
 const useWebSocket = (url: string) => {
   const [ws, setWs] = useState<WebSocket | null>(null);
   const lastSentOrientation = useRef<number>(0);
-  const lastSentAcceleration = useRef<number>(0);
+  const lastSentDirection = useRef<Direction>(Direction.None);
 
   const [receivedOrientation, setReceivedOrientation] = useState<number>(0);
-  const [receivedAcceleration, setReceivedAcceleration] = useState<number>(0);
+  const [receivedDirection, setReceivedDirection] = useState<Direction>(
+    Direction.None
+  );
 
   // Initialize WebSocket connection
   useEffect(() => {
@@ -42,9 +43,9 @@ const useWebSocket = (url: string) => {
 
     socket.onmessage = (event) => {
       const encodedPose = parseInt(event.data);
-      const { orientation, acceleration } = decodePose(encodedPose);
+      const { orientation, direction } = decodePose(encodedPose);
       setReceivedOrientation(orientation);
-      setReceivedAcceleration(acceleration);
+      setReceivedDirection(direction);
     };
 
     return () => {
@@ -53,24 +54,23 @@ const useWebSocket = (url: string) => {
   }, [url]);
 
   // Function to send the pose data if it has changed
-  const sendMessage = (orientation: number, acceleration: number) => {
+  const sendMessage = (orientation: number, direction: Direction) => {
     const roundedOrientation = Math.round(orientation);
-    const roundedAcceleration = Math.round(acceleration * 10) / 10;
 
     // Only send if values have changed
     if (
       roundedOrientation !== lastSentOrientation.current ||
-      roundedAcceleration !== lastSentAcceleration.current
+      direction !== lastSentDirection.current
     ) {
       lastSentOrientation.current = roundedOrientation;
-      lastSentAcceleration.current = roundedAcceleration;
+      lastSentDirection.current = direction;
 
-      const encodedPose = encodePose(roundedOrientation, roundedAcceleration);
+      const encodedPose = encodePose(roundedOrientation, direction);
       ws?.send(encodedPose.toString());
     }
   };
 
-  return { sendMessage, receivedOrientation, receivedAcceleration };
+  return { sendMessage, receivedOrientation, receivedDirection };
 };
 
 export default useWebSocket;
