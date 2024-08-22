@@ -14,9 +14,13 @@ export default function Breaker() {
   const [playerObj2, setPlayerObj2] = useState(player);
   const [start1, setStart1] = useState(false);
   const [start2, setStart2] = useState(false);
-  const { receivedDirection, receivedOrientation } = useWebSocket(
-    "https://jeeflikebeef.duckdns.org/api/websocket/controller"
-  );
+  const {
+    receivedDirection1,
+    receivedOrientation1,
+    receivedDirection2,
+    receivedOrientation2,
+    recievedUsers,
+  } = useWebSocket("https://jeeflikebeef.duckdns.org/api/websocket/controller");
 
   useEffect(() => {
     if (!gameOver1 || !gameOver2) return;
@@ -29,20 +33,41 @@ export default function Breaker() {
     }
   }, [gameOver1, gameOver2]);
 
-  useEffect(() => {}, [receivedDirection, receivedOrientation]);
+  useEffect(() => {}, [
+    receivedDirection1,
+    receivedOrientation1,
+    receivedDirection2,
+    receivedOrientation2,
+  ]);
+  useEffect(() => {
+    for (let user of recievedUsers) {
+      if (user.playerNumber === 0) {
+        setPlayerObj1((prev) => ({ ...prev, name: user.name }));
+        setStart1(true);
+      } else if (user.playerNumber === 1) {
+        setPlayerObj2((prev) => ({ ...prev, name: user.name }));
+        setStart2(true);
+      }
+    }
+  }, [recievedUsers]);
   return (
     <>
       <h1>Brick breaker!</h1>
       <div>
         <h1>Listener</h1>
         <p>
-          Orientation (Z-axis): {receivedOrientation}° {receivedDirection}
+          Orientation (Z-axis): {receivedOrientation1}° {receivedOrientation2}
         </p>
         <p>
           Direction:{" "}
-          {receivedDirection === Direction.None
+          {receivedDirection1 === Direction.None
             ? "NOT MOVING"
-            : receivedDirection === Direction.Left
+            : receivedDirection1 === Direction.Left
+            ? "LEFT"
+            : "RIGHT"}
+          {receivedDirection2 === Direction.None
+            ? "NOT MOVING"
+            : receivedDirection2 === Direction.Left
             ? "LEFT"
             : "RIGHT"}
         </p>
@@ -57,8 +82,8 @@ export default function Breaker() {
                 setPlayerObj={setPlayerObj1}
                 setGameOver={setGameOver1}
                 start={start1}
-                direction={receivedDirection}
-                orientation={receivedOrientation}
+                direction={receivedDirection1}
+                orientation={receivedOrientation1}
               />
             ) : (
               <button
@@ -79,8 +104,8 @@ export default function Breaker() {
                 setPlayerObj={setPlayerObj2}
                 setGameOver={setGameOver2}
                 start={start2}
-                direction={receivedDirection}
-                orientation={receivedOrientation}
+                direction={receivedDirection2}
+                orientation={receivedOrientation2}
               />
             ) : (
               <button

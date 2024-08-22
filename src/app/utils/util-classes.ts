@@ -1,3 +1,5 @@
+import { User } from "../games/brick-breaker/controller/page";
+
 export class Ball {
   constructor(public x: number, public y: number, public rad: number) {}
 
@@ -308,3 +310,26 @@ export enum Direction {
   Left = 1,
   Right = 2,
 }
+
+export type WebSocketInboundMessage = {
+  Type: "JOIN" | "UPDATE" | "GETUSERS";
+  Username?: string;
+  PlayerNumber?: 0 | 1;
+  Pose?: string;
+  Users?: User[];
+};
+
+export type WebSocketOutboundMessage = {
+  Type: "JOIN" | "UPDATE" | "GETUSERS";
+  Username?: string;
+  PlayerNumber?: 0 | 1;
+  Pose?: number;
+};
+
+export type WebSocketRawMessage = {
+  Type: "JOIN" | "UPDATE" | "GETUSERS";
+  Username?: string;
+  PlayerNumber?: 0 | 1;
+  Orientation?: number;
+  Direction?: number;
+};
