@@ -1,126 +1,125 @@
 <script setup lang="ts">
-import { computed, ref, watch, type Ref } from 'vue';
+import { reactive, ref } from 'vue';
+import ContactInfo from './components/ContactInfo.vue';
+import ContactForm from './components/ContactForm.vue';
+import { Friend } from './types';
 
-const headerName = 'My Course Goal';
-const link = 'https://www.google.com';
-const clickText = [
-  'Why did you click me?',
-  'Please stop.',
-  'OW! That one hurt!',
-  "DON'T DO THAT AGAIN!",
-  'Okay I am done talking...',
-  'GOODBYE!'
-];
-let currText: Ref<string[]> = ref([]);
-let iterator = ref(0);
-let valuePerKeyStroke = ref('');
-let valuePerEnter = ref('');
-let valuePerEnterElement = ref<HTMLInputElement>();
-const clickFunction = () => {
-  if (iterator.value === clickText.length) {
-    iterator.value = 0;
-    currText.value = [];
-    return;
+const friends = reactive<Friend[]>([
+  {
+    id: 'manual',
+    name: 'Manual Lorenz',
+    phone: '289 111 1234',
+    email: 'manual@localhost.com',
+    isFavourite: true
+  },
+  {
+    id: 'julie',
+    name: 'Julie Jones',
+    phone: '905 123 4444',
+    email: 'julie@localhost.com',
+    isFavourite: false
   }
-  currText.value.push(clickText[iterator.value++]);
+]);
+const toggleFav = (index: number) => {
+  friends[index].isFavourite = !friends[index].isFavourite;
 };
-const alertUser = ($event: Event, message: string) => {
-  alert(message);
+const addFriend = (friend: Friend) => {
+  friends.push(friend);
+  console.log(friends);
 };
-watch(iterator, (val) => {
-  val % 2 === 0 && console.log(val);
-});
-const onEnter = () => {
-  if (valuePerEnterElement.value) {
-    valuePerEnter.value = valuePerEnterElement.value.value || '';
-    valuePerEnterElement.value.style.background = 'green';
-  }
-};
-
-const resetInputs = () => {
-  valuePerKeyStroke.value = '';
-  valuePerEnter.value = '';
-  if (valuePerEnterElement?.value) {
-    valuePerEnterElement.value.value = '';
-    valuePerEnterElement.value.style.background = 'transparent';
-  }
+const deleteContact = (index: number) => {
+  friends.splice(index, 1);
 };
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <h1>Vue Course Goals</h1>
-    </div>
-  </header>
-
-  <main>
-    <p>{{ headerName }}</p>
-    <span>Let's go to <a :href="link">GOOGLE</a></span>
-    <br />
-    <span @click="clickFunction()" class="cursor-pointer">CLICK ME</span>
-  </main>
-  <body>
-    <div class="w-full text-center text-xl">
-      <h1 v-for="text of currText" :key="text">{{ text }}</h1>
-    </div>
-    <div>
-      <h1 class="py-10">ASSIGNMENTS:</h1>
-      <div class="pl-5">
-        ASSIGNMENT 2:
-        <section id="assignment" class="pb-10">
-          <h2>Event Practice</h2>
-          <!-- 1) Show an alert (any text of your choice) when the button is pressed -->
-          <button @click="alertUser($event, 'OH NO! YOU CLIKCED ME AGAIN!!!!')">Show Alert</button>
-          <hr />
-          <!-- 2) Register the user input on "keydown" and output it in the paragraph (hint: event.target.value helps) -->
-          <input type="text" v-model="valuePerKeyStroke" class="text-black" />
-          <p>OUTPUT: {{ valuePerKeyStroke }}</p>
-          <hr />
-          <!-- 3) Repeat 2) but only output the entered value if the ENTER key was pressed -->
-          <input type="text" @keyup.enter="onEnter" ref="valuePerEnterElement" class="text-black" />
-          <p>OUTPUT: {{ valuePerEnter }}</p>
-          <button @click="resetInputs">RESET INPUT</button>
-        </section>
-      </div>
-    </div>
-  </body>
+  <section id="app">
+    <header>
+      <h1>FriendList</h1>
+    </header>
+    <ContactForm @new-friend="addFriend" />
+    <ul>
+      <li v-for="(friend, index) of friends" :key="friend.id">
+        <ContactInfo
+          :friend="friend"
+          :friend-id="index"
+          @toggle-favourite="toggleFav"
+          @delete-contact="deleteContact"
+        />
+      </li>
+    </ul>
+  </section>
 </template>
 
-<style scoped>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Jost&display=swap');
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: 'Jost', sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
 header {
-  line-height: 1.5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+  margin: 3rem auto;
+  border-radius: 10px;
+  padding: 1rem;
+  background-color: #58004d;
+  color: white;
+  text-align: center;
+  width: 90%;
+  max-width: 40rem;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+#app ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+#app li {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+  margin: 1rem auto;
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  width: 90%;
+  max-width: 40rem;
 }
-button {
-  background: #f4d29c;
-  color: black;
-  border: 2px solid rgb(214, 110, 12);
-  border-radius: 4px;
-  padding: 5px 10px;
+
+#app h2 {
+  font-size: 2rem;
+  border-bottom: 4px solid #ccc;
+  color: #58004d;
+  margin: 0 0 1rem 0;
+}
+
+#app button {
+  font: inherit;
+  cursor: pointer;
+  border: 1px solid #ff0077;
+  background-color: #ff0077;
+  color: white;
+  padding: 0.05rem 1rem;
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.26);
+  border-radius: 5px;
+}
+
+#app button:hover,
+#app button:active {
+  background-color: #ec3169;
+  border-color: #ec3169;
+  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.26);
+}
+#app input {
+  border: 2px solid black;
+  border-radius: 5px;
+  padding-inline: 10px;
 }
 </style>
