@@ -18,7 +18,6 @@
   </BaseCard>
   <component
     :is="selectedComponent"
-    v-bind="currentProperties"
     @delete-resource="deleteResource"
     @add-resource="addResource"
   ></component>
@@ -27,7 +26,7 @@
 <script setup lang="ts">
 import TheHeader from './components/layouts/TheHeader.vue';
 import BaseCard from './components/UI/BaseCard.vue';
-import { computed, DefineComponent, ref, shallowRef } from 'vue';
+import { DefineComponent, provide, ref, shallowRef } from 'vue';
 import StoredResources from './components/pages/StoredResources.vue';
 import AddResource from './components/pages/AddResource.vue';
 import { Resource } from './types';
@@ -41,7 +40,6 @@ const selectedComponent = shallowRef<DefineComponent<DynamicComponentProps>>(
   StoredResources as DefineComponent
 );
 const selectPage = (pageName: string) => {
-  console.log(selectedComponent.value);
   selectedPage.value = pageName;
   selectedComponent.value =
     pageName === 'stored-resources'
@@ -64,12 +62,13 @@ const deleteResource = (id: string) => {
   console.log(id);
   resources.value = resources.value.filter((val) => val.id !== id);
 };
-const currentProperties = computed(() => {
-  if (selectedPage.value === 'stored-resources') {
-    return { resources: resources.value };
-  }
-  return undefined;
-});
+provide('resources', resources);
+// const currentProperties = computed(() => {
+//   if (selectedPage.value === 'stored-resources') {
+//     return { resources: resources.value };
+//   }
+//   return undefined;
+// });
 </script>
 
 <style scoped></style>

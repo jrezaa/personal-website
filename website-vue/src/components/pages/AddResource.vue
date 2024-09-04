@@ -3,7 +3,7 @@
     <form @submit.prevent="submitResource">
       <div class="pb-4">
         <h2>Title</h2>
-        <input type="text" v-model="resource.title" />
+        <input type="text" v-model="resource.title" ref="title" />
       </div>
       <div class="pb-4">
         <h2>Description</h2>
@@ -28,8 +28,9 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue';
 import BaseCard from '@components/UI/BaseCard.vue';
-import { Resource } from '@/types';
+import { Resource } from 'src/types';
 import ErrorDialog from '@components/UI/ErrorDialog.vue';
+
 const emit = defineEmits<{ (e: 'add-resource', resource: Resource): void }>();
 const resource = reactive<Resource>({ title: '', id: '', description: '', link: '' });
 const invalidInputFields = ref(false);
@@ -53,8 +54,8 @@ const formatID = (text: string) => {
   const trimmed = text.trim().toLowerCase();
   return trimmed.replace(/\s+/g, '-');
 };
-watch(resource, (val) => {
-  val.id = formatID(val.title);
+watch(resource, (val, prevVal) => {
+  if (val.title !== prevVal.title) val.id = formatID(val.title);
 });
 </script>
 

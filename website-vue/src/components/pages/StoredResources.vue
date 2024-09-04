@@ -20,12 +20,11 @@
 </template>
 
 <script setup lang="ts">
+import { inject } from 'vue';
 import { Resource } from '../../types';
 import BaseCard from '@components/UI/BaseCard.vue';
 
-defineProps<{
-  resources?: Resource[];
-}>();
+const resources: Resource[] | undefined = inject('resources');
 </script>
 
 <style scoped>
