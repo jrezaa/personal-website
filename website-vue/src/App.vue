@@ -1,5 +1,5 @@
 <template>
-  <TheHeader>RememberMe</TheHeader>
+  <TheHeader title="RememberMe"></TheHeader>
   <BaseCard>
     <template #header>
       <button
@@ -25,11 +25,11 @@
 </template>
 
 <script setup lang="ts">
-import TheHeader from './components/TheHeader.vue';
-import BaseCard from './components/BaseCard.vue';
+import TheHeader from './components/layouts/TheHeader.vue';
+import BaseCard from './components/UI/BaseCard.vue';
 import { computed, DefineComponent, ref, shallowRef } from 'vue';
-import StoredResources from './components/StoredResources.vue';
-import AddResource from './components/AddResource.vue';
+import StoredResources from './components/pages/StoredResources.vue';
+import AddResource from './components/pages/AddResource.vue';
 import { Resource } from './types';
 type DynamicComponentProps = AddResourceProps | StoredResourceProps;
 type AddResourceProps = {};

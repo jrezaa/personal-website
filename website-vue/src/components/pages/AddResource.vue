@@ -27,9 +27,9 @@
 
 <script setup lang="ts">
 import { reactive, ref, watch } from 'vue';
-import BaseCard from './BaseCard.vue';
-import { Resource } from '../types';
-import ErrorDialog from './ErrorDialog.vue';
+import BaseCard from '@components/UI/BaseCard.vue';
+import { Resource } from '@/types';
+import ErrorDialog from '@components/UI/ErrorDialog.vue';
 const emit = defineEmits<{ (e: 'add-resource', resource: Resource): void }>();
 const resource = reactive<Resource>({ title: '', id: '', description: '', link: '' });
 const invalidInputFields = ref(false);

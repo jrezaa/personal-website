@@ -20,8 +20,8 @@
 </template>
 
 <script setup lang="ts">
-import { Resource } from '../types';
-import BaseCard from './BaseCard.vue';
+import { Resource } from '../../types';
+import BaseCard from '@components/UI/BaseCard.vue';
 
 defineProps<{
   resources?: Resource[];
