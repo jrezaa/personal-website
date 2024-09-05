@@ -16,7 +16,9 @@
       </button>
     </template>
   </BaseCard>
-  <component :is="selectedComponent" @delete-resource="deleteResource"></component>
+  <keep-alive>
+    <component :is="selectedComponent" @delete-resource="deleteResource"></component>
+  </keep-alive>
 </template>
 
 <script setup lang="ts">
