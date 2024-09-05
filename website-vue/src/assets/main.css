@@ -22,3 +22,8 @@ button.selected {
 button:hover {
   background-color: rgba(204, 0, 255, 0.508);
 }
+input,
+select {
+  border: 1px solid grey;
+  border-radius: 2px;
+}

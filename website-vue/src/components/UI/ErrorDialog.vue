@@ -1,7 +1,7 @@
 <template>
-  <div class="modal-mask">
+  <div class="modal-mask" @click="emit('close-modal')">
     <div class="modal-wrapper">
-      <div class="modal-container">
+      <div class="modal-container" @click.stop>
         <header>
           <h3><slot name="header"></slot></h3>
         </header>

@@ -5,7 +5,7 @@
         <template #header>
           <div class="header">
             <h2>{{ resource.title }}</h2>
-            <button @click="$emit('delete-resource', resource.id)">Delete</button>
+            <button @click="deleteResource(resource.id)">Delete</button>
           </div>
         </template>
         <template #default>
@@ -25,6 +25,11 @@ import { Resource } from '../../types';
 import BaseCard from '@components/UI/BaseCard.vue';
 
 const resources: Resource[] | undefined = inject('resources');
+const deleteResource: ((id: string) => void) | undefined =
+  inject('deleteResource') ||
+  ((id: string) => {
+    console.log(id);
+  });
 </script>
 
 <style scoped>
