@@ -26,12 +26,11 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue';
+import { inject, reactive, ref, watch } from 'vue';
 import BaseCard from '@components/UI/BaseCard.vue';
 import { Resource } from 'src/types';
 import ErrorDialog from '@components/UI/ErrorDialog.vue';
-
-const emit = defineEmits<{ (e: 'add-resource', resource: Resource): void }>();
+const addResource: ((val: Resource) => void) | undefined = inject('addResource');
 const resource = reactive<Resource>({ title: '', id: '', description: '', link: '' });
 const invalidInputFields = ref(false);
 const submitResource = () => {
@@ -43,12 +42,13 @@ const submitResource = () => {
     invalidInputFields.value = true;
     return;
   }
-  emit('add-resource', {
-    title: resource.title,
-    description: resource.description,
-    link: resource.link,
-    id: resource.id
-  });
+  addResource &&
+    addResource({
+      title: resource.title,
+      description: resource.description,
+      link: resource.link,
+      id: resource.id
+    });
 };
 const formatID = (text: string) => {
   const trimmed = text.trim().toLowerCase();

@@ -16,11 +16,7 @@
       </button>
     </template>
   </BaseCard>
-  <component
-    :is="selectedComponent"
-    @delete-resource="deleteResource"
-    @add-resource="addResource"
-  ></component>
+  <component :is="selectedComponent" @delete-resource="deleteResource"></component>
 </template>
 
 <script setup lang="ts">
@@ -63,6 +59,7 @@ const deleteResource = (id: string) => {
   resources.value = resources.value.filter((val) => val.id !== id);
 };
 provide('resources', resources);
+provide('addResource', addResource);
 // const currentProperties = computed(() => {
 //   if (selectedPage.value === 'stored-resources') {
 //     return { resources: resources.value };
