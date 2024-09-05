@@ -35,9 +35,9 @@ const resource = reactive<Resource>({ title: '', id: '', description: '', link: 
 const invalidInputFields = ref(false);
 const submitResource = () => {
   if (
-    resource.title.length === 0 ||
-    resource.description.length === 0 ||
-    resource.link.length === 0
+    resource.title.trim().length === 0 ||
+    resource.description.trim().length === 0 ||
+    resource.link.trim().length === 0
   ) {
     invalidInputFields.value = true;
     return;
