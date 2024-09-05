@@ -18,10 +18,16 @@
     </form>
   </BaseCard>
   <Teleport to="#app">
-    <ErrorDialog
-      v-if="invalidInputFields"
-      @close-modal="() => (invalidInputFields = false)"
-    ></ErrorDialog>
+    <ErrorDialog v-if="invalidInputFields" @close-modal="() => (invalidInputFields = false)">
+      <template #header> Invalid Input </template>
+      <template #default>
+        <p class="pb-3">Unfortunately, at least on input value is invalid.</p>
+        <p class="pb-10">
+          Please check all inputs and make sure you enter at least a few characters into each input
+          field.
+        </p></template
+      >
+    </ErrorDialog>
   </Teleport>
 </template>
 

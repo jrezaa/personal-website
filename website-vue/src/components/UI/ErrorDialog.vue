@@ -2,13 +2,12 @@
   <div class="modal-mask">
     <div class="modal-wrapper">
       <div class="modal-container">
-        <header><h3>Invalid Input</h3></header>
+        <header>
+          <h3><slot name="header"></slot></h3>
+        </header>
         <div class="modal-body">
-          <div class="pb-3">Unfortunately, at least on input value is invalid.</div>
-          <div class="pb-10">
-            Please check all inputs and make sure you enter at least a few characters into each
-            input field.
-          </div>
+          <slot></slot>
+
           <button @click="emit('close-modal')" class="modal-default-button selected">Okay</button>
         </div>
       </div>
